@@ -25,8 +25,6 @@ liste_points=[] # Tableau de pts
 clusters=[]
 debit_MAX=4000000
 
-
-
 #On crée le tableau de points et on crée une copie de ce tableau
 for i in range(len(lon)):
     point=[lon[i], lat[i],debit[i],num_cluster]
@@ -47,7 +45,6 @@ def dist2(new_cluster,i,liste):
     lon2 = radians(liste[i][0])
     dlon = lon2 - lon1
     dlat = lat2 - lat1
-
     a = sin(dlat / 2)**2 + cos(lat1) * cos(lat2) * sin(dlon / 2)**2
     c = 2 * atan2(sqrt(a), sqrt(1 - a))
     distance = R * c  
@@ -84,18 +81,12 @@ while (len(liste_copie)>0): #Tant que la liste n'est pas vide, cad que tous les 
     del liste_copie[0] 
     nb_supprime += 1
     while ((count<len(liste_copie)) and debit+50<debit_MAX): #Pour chaque cluster, on cherche à le remplir au maximum. La seconde condition est pour éviter de parcourir inutilement
-        #print(count)
-        #print(len(liste_copie))
-        #print(nb_supprime)
-        #print("Longueur de la liste: ", len(liste_copie))
-        #print("Count: ", count)
-        #print("debit : ", debit)
-        if (dist2(new_cluster[0],count-nb_supprime,liste_copie)<45 and (debit+liste_copie[count-nb_supprime][2]<debit_MAX)):
+        if (dist2(new_cluster[0],count-nb_supprime,liste_copie)<45 and (debit+liste_copie[count-nb_supprime][2]<debit_MAX)): #Conditions de distances et de débit
             debit += liste_copie[count-nb_supprime][2]
-            new_point_cluster = liste_copie[count-nb_supprime]
+            new_point_cluster = liste_copie[count-nb_supprime] 
             new_cluster.append(new_point_cluster)
             #print("nb_supprimé ",nb_supprime)
-            del liste_copie[count-nb_supprime]
+            del liste_copie[count-nb_supprime] #On retire le point ajouté au cluster de la liste
             nb_supprime+=1
         count += 1
     clusters.append(new_cluster)
@@ -103,13 +94,12 @@ while (len(liste_copie)>0): #Tant que la liste n'est pas vide, cad que tous les 
     pourcentage = (longueur-count)/longueur
     print("Count = ", count, "Nb_suppr = ", nb_supprime, "debit du cluster = ", debit, "longueur des centres =", len(clusters),)
     print( "Pourcentage de complétion: ", pourcentage*100,"%", "--- %s seconds ---" % (time.time() - start_time))
-    
+
 #print(clusters)
 #print("nb_cluster : ", nb_clusters)
 print("Nombre de clusters ",len(clusters[0]))
 
 with open('NaiveCSV', 'w') as f:
-      
     # using csv.writer method from CSV package
     write = csv.writer(f)
     write.writerow(clusters)
